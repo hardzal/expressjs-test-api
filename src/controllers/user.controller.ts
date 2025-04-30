@@ -83,7 +83,7 @@ class UserController {
         )
       );
     } catch (error) {
-      res.json({
+      res.status(500).json({
         message: "Error when buy products",
         error: error instanceof Error ? error.message : "Unknown error",
       });
