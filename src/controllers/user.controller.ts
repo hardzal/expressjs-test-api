@@ -13,9 +13,17 @@ class UserController {
     try {
       const users: User[] = await userService.getUsers();
       console.log(users);
-      res.json(users);
+      res.json(
+        JSON.parse(
+          JSON.stringify(users, (_, v) =>
+            typeof v === "bigint" ? v.toString() : v
+          )
+        )
+      );
     } catch (error) {
-      res.json(error);
+      res.status(500).json({
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   }
 
@@ -39,6 +47,44 @@ class UserController {
     } catch (error) {
       res.status(500).json({
         message: "Error when transferred money",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
+  async buyProducts(req: Request, res: Response, next: NextFunction) {
+    /*
+    request
+      {
+          "userId": number,
+          "productId": number,
+          "amount": number
+      },
+
+
+      response
+        {
+          "user": {},
+          "product": {},
+          "totalCost": number.
+          "change": number,
+        }
+    */
+    try {
+      console.log(req.body);
+      const { userId, productId, amount } = req.body;
+
+      const result = await userService.buyProducts(userId, productId, amount);
+      res.json(
+        JSON.parse(
+          JSON.stringify(result, (_, v) =>
+            typeof v === "bigint" ? v.toString() : v
+          )
+        )
+      );
+    } catch (error) {
+      res.json({
+        message: "Error when buy products",
         error: error instanceof Error ? error.message : "Unknown error",
       });
     }

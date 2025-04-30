@@ -20,7 +20,8 @@ model User {
   email    String  @unique
   balance  BigInt @default(0)
 
-  product Product[] 
+  products Product[] 
+  orders Order[]
   createdAt DateTime @default(now())
   updatedAt DateTime?
 
@@ -33,10 +34,27 @@ model Product {
   userId Int 
  
   title String  
+  stock Int
   price   Decimal  
   createdAt DateTime @default(now())
   updatedAt DateTime?
 
+  orders Order[] 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@map("products")
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+
+  userId Int 
+  productId Int 
+
+  cost BigInt 
+  amount Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@map("orders")
 }
